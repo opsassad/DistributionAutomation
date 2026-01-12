@@ -97,7 +97,10 @@ function buildEmailSubject(summary) {
 
   const dateTime = day + '-' + months[now.getMonth()] + '-' + now.getFullYear() + ' ' + hour12 + ':' + minutes + ' ' + ampm;
 
-  return status + ' Special Lead Distro - ' + dateTime;
+  // Use distroType to determine subject label (default: Special Lead Distro)
+  const distroLabel = summary.distroType === 'regular' ? 'Regular Lead Distro' : 'Special Lead Distro';
+
+  return status + ' ' + distroLabel + ' - ' + dateTime;
 }
 
 
@@ -108,6 +111,11 @@ function buildEmailHtml(summary, results) {
   const successResults = results.filter(r => r.status === 'SUCCESS');
   const errorResults = results.filter(r => r.status === 'ERROR');
   const skippedResults = results.filter(r => r.status === 'SKIPPED');
+
+  // Determine report title and column labels based on distroType
+  const isRegular = summary.distroType === 'regular';
+  const reportTitle = isRegular ? 'Regular Lead Distro Report' : 'Special Lead Distro Report';
+  const agentColumnHeader = isRegular ? 'Agent Group' : 'Agents';
 
   return `
 <!DOCTYPE html>
@@ -126,7 +134,7 @@ function buildEmailHtml(summary, results) {
           <tr>
             <td style="background-color: #5050A2; padding: 28px 40px;">
               <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 600;">
-                Special Lead Distro Report
+                ${reportTitle}
               </h1>
               <p style="color: rgba(255,255,255,0.7); margin: 6px 0 0 0; font-size: 13px;">
                 ${formatDate(new Date())}
@@ -195,7 +203,7 @@ function buildEmailHtml(summary, results) {
                       <strong>Reason:</strong> ${escapeHtml(r.reason)}
                     </div>
                     <div style="font-size: 12px; color: #999; margin-top: 6px;">
-                      Row ${r.rowNumber} • ${r.agentCount} agents • ${r.leadPerOwner} leads/agent
+                      Row ${r.rowNumber} • ${isRegular ? escapeHtml(r.agentGroup || '') : r.agentCount + ' agents'} • ${r.leadPerOwner} leads/agent
                     </div>
                   </div>
                   `).join('')}
@@ -219,13 +227,13 @@ function buildEmailHtml(summary, results) {
                   <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 13px;">
                     <tr style="background-color: #c6f6d5;">
                       <td style="padding: 8px 12px; font-weight: 600; color: #276749;">Distribution Name</td>
-                      <td style="padding: 8px 12px; font-weight: 600; color: #276749; text-align: center;">Agents</td>
+                      <td style="padding: 8px 12px; font-weight: 600; color: #276749; text-align: center;">${agentColumnHeader}</td>
                       <td style="padding: 8px 12px; font-weight: 600; color: #276749; text-align: center;">Per Agent</td>
                     </tr>
                     ${successResults.map((r, i) => `
                     <tr style="background-color: ${i % 2 === 0 ? '#fff' : '#f0fff4'};">
                       <td style="padding: 10px 12px; color: #2f855a;">${escapeHtml(r.distributionName)}</td>
-                      <td style="padding: 10px 12px; color: #2f855a; text-align: center;">${r.agentCount}</td>
+                      <td style="padding: 10px 12px; color: #2f855a; text-align: center;">${isRegular ? escapeHtml(r.agentGroup || '') : r.agentCount}</td>
                       <td style="padding: 10px 12px; color: #2f855a; text-align: center;">${r.leadPerOwner}</td>
                     </tr>
                     `).join('')}
