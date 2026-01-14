@@ -97,8 +97,8 @@ function buildEmailSubject(summary) {
 
   const dateTime = day + '-' + months[now.getMonth()] + '-' + now.getFullYear() + ' ' + hour12 + ':' + minutes + ' ' + ampm;
 
-  // Use distroType to determine subject label (default: Special Lead Distro)
-  const distroLabel = summary.distroType === 'regular' ? 'Regular Lead Distro' : 'Special Lead Distro';
+  // Use distroType to determine subject label
+  const distroLabel = summary.distroType === 'regular' ? 'Regular Lead Queued' : 'Special Lead Queued';
 
   return status + ' ' + distroLabel + ' - ' + dateTime;
 }

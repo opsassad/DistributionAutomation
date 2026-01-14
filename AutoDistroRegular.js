@@ -409,19 +409,85 @@ function fetchRegularFilterId(filterName) {
 }
 
 /**
- * Distributes leads to groups
+ * Fetches filter details including items array
+ */
+function fetchFilterItems(filterId) {
+  const url = REGULAR_CONFIG.API_BASE_URL + '/filters/' + filterId;
+
+  try {
+    const response = UrlFetchApp.fetch(url, {
+      method: 'GET',
+      headers: getRegularHeaders(),
+      muteHttpExceptions: true
+    });
+
+    if (response.getResponseCode() !== 200) {
+      logRegular('ERROR fetching filter items: HTTP ' + response.getResponseCode());
+      return null;
+    }
+
+    const json = JSON.parse(response.getContentText());
+    return json.data ? json.data.items : (json.items || null);
+  } catch (e) {
+    logRegular('ERROR fetching filter items: ' + e.message);
+    return null;
+  }
+}
+
+/**
+ * Builds query string from filter items
+ * @param {Array} items - Filter items array
+ * @returns {string} Query string like "search=...&conditions=...&join=AND"
+ */
+function buildQueryString(items) {
+  if (!items || items.length === 0) return '';
+
+  const searchParts = [];
+  const conditionParts = [];
+
+  for (const item of items) {
+    const field = item.field;
+    const value = Array.isArray(item.value) ? item.value.join(',') : item.value;
+    const condition = item.condition;
+
+    searchParts.push(field + ':' + value);
+    conditionParts.push(field + ':' + condition);
+  }
+
+  const search = encodeURIComponent(searchParts.join(';'));
+  const conditions = encodeURIComponent(conditionParts.join(';'));
+
+  return 'search=' + search + '&conditions=' + conditions + '&join=AND';
+}
+
+/**
+ * Distributes leads to groups (using OLD bulk-updates API)
  */
 function distributeByGroup(filterId, filterName, groupIds, leadPerOwner) {
-  const url = REGULAR_CONFIG.API_BASE_URL + '/leads/bulk-distributes';
+  // Step 1: Fetch filter items
+  const items = fetchFilterItems(filterId);
+  if (!items || items.length === 0) {
+    return { success: false, error: 'Could not fetch filter items' };
+  }
+  logRegular('Fetched ' + items.length + ' filter items for filter ID: ' + filterId);
+
+  // Step 2: Build query string from items
+  const queryString = buildQueryString(items);
+  if (!queryString) {
+    return { success: false, error: 'Could not build query string from items' };
+  }
+
+  // Step 3: Call OLD API
+  const url = REGULAR_CONFIG.API_BASE_URL + '/leads/bulk-updates?' + queryString;
   const payload = {
-    data: [{
-      type_id: REGULAR_CONFIG.DISTRIBUTION_TYPE_ID,
-      field_key: REGULAR_CONFIG.DISTRIBUTION_FIELD_KEY,
-      groupIds: groupIds,
-      lead_per_owner: leadPerOwner,
-      filter_id: filterId,
-      name: filterName
-    }]
+    groupIds: groupIds,
+    leads_per_campaign: null,
+    lead_per_owner: leadPerOwner,
+    field_key: REGULAR_CONFIG.DISTRIBUTION_FIELD_KEY,
+    name: filterName,
+    filter_id: filterId,
+    type_id: REGULAR_CONFIG.DISTRIBUTION_TYPE_ID,
+    items: items
   };
 
   try {
