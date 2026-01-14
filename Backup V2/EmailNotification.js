@@ -17,7 +17,7 @@ const EMAIL_CONFIG = {
   CC_EMAILS: 'ishmam@shikho.com',
 
   // Email subject prefix
-  // SUBJECT_PREFIX: '[Lead Distribution]',
+  SUBJECT_PREFIX: '[Lead Distribution]',
 
   // Sender name (shown in email)
   SENDER_NAME: 'Distribution Bot',
@@ -97,8 +97,8 @@ function buildEmailSubject(summary) {
 
   const dateTime = day + '-' + months[now.getMonth()] + '-' + now.getFullYear() + ' ' + hour12 + ':' + minutes + ' ' + ampm;
 
-  // Use distroType to determine subject label
-  const distroLabel = summary.distroType === 'regular' ? 'Regular Lead Queued' : 'Special Lead Queued';
+  // Use distroType to determine subject label (default: Special Lead Distro)
+  const distroLabel = summary.distroType === 'regular' ? 'Regular Lead Distro' : 'Special Lead Distro';
 
   return status + ' ' + distroLabel + ' - ' + dateTime;
 }
