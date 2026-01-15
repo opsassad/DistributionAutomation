@@ -5,11 +5,11 @@ function extractDistributionSummary() {
   Logger.log("=== STARTING EXTRACTION ===");
   Logger.log("Active Sheet: " + activeSheet.getName());
   
-  // Get or create Distribution Summary sheet
-  let summarySheet = ss.getSheetByName("Distribution Summary");
+  // Get or create Special Distro Status sheet
+  let summarySheet = ss.getSheetByName("Special Distro Status");
   if (!summarySheet) {
-    Logger.log("Creating new Distribution Summary sheet");
-    summarySheet = ss.insertSheet("Distribution Summary");
+    Logger.log("Creating new Special Distro Status sheet");
+    summarySheet = ss.insertSheet("Special Distro Status");
     // Add headers
     summarySheet.getRange("A1:D1").setValues([["Date", "Distribution Name", "Per Agent", "Agent IDs"]]);
     summarySheet.getRange("A1:D1").setFontWeight("bold").setBackground("#4a86e8").setFontColor("white");
@@ -19,7 +19,7 @@ function extractDistributionSummary() {
     summarySheet.getRange("A:A").setNumberFormat("@"); // Date column as text
     summarySheet.getRange("D:D").setNumberFormat("@"); // Agent IDs column as text
   } else {
-    Logger.log("Distribution Summary sheet already exists");
+    Logger.log("Special Distro Status sheet already exists");
     // Ensure columns are formatted as text
     summarySheet.getRange("A:A").setNumberFormat("@");
     summarySheet.getRange("D:D").setNumberFormat("@");
@@ -129,7 +129,7 @@ function extractDistributionSummary() {
   // Write results to summary sheet
   if (results.length > 0) {
     const nextRow = summarySheet.getLastRow() + 1;
-    Logger.log("Writing to row " + nextRow + " in Distribution Summary");
+    Logger.log("Writing to row " + nextRow + " in Special Distro Status");
     
     // Write the data
     summarySheet.getRange(nextRow, 1, results.length, 4).setValues(results);
@@ -146,7 +146,7 @@ function extractDistributionSummary() {
     // Show success message
     SpreadsheetApp.getUi().alert(
       'Success!',
-      `Extracted ${results.length} distribution(s) to "Distribution Summary" sheet.`,
+      `Extracted ${results.length} distribution(s) to "Special Distro Status" sheet.`,
       SpreadsheetApp.getUi().ButtonSet.OK
     );
   } else {

@@ -15,7 +15,7 @@ const CONFIG = {
   AUTH_TOKEN: 'YOUR_BEARER_TOKEN_HERE',
 
   // Sheets
-  SUMMARY_SHEET: 'Distribution Summary',
+  SUMMARY_SHEET: 'Special Distro Status',
   SOURCE_SHEET_PREFIX: 'Special Leads - ',  // e.g., "Special Leads - 12-Jan-2026"
 
   // Distribution Settings
@@ -34,7 +34,7 @@ const CONFIG = {
 /**
  * SCHEDULED TRIGGER: Extract & Distribute
  *
- * 1. Clears Distribution Summary
+ * 1. Clears Special Distro Status
  * 2. Finds today's sheet (e.g., "Special Leads - 12-Jan-2026")
  * 3. Extracts distribution data
  * 4. Runs distribution via API

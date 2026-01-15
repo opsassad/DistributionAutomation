@@ -61,7 +61,7 @@ This automation system handles:
 
 The main function `scheduledExtractAndDistribute()` runs on a schedule and:
 
-1. Clears the "Distribution Summary" sheet
+1. Clears the "Special Distro Status" sheet
 2. Finds today's sheet (format: "Special Leads - DD-Mon-YYYY")
 3. Extracts distribution data (filter names, agent IDs, leads per agent)
 4. Calls the CRM API to distribute leads
@@ -69,7 +69,7 @@ The main function `scheduledExtractAndDistribute()` runs on a schedule and:
 
 ### Manual Extraction
 
-Run `extractDistributionSummary()` to manually extract data from the active sheet to the Distribution Summary.
+Run `extractDistributionSummary()` to manually extract data from the active sheet to the Special Distro Status.
 
 ### Test Email
 

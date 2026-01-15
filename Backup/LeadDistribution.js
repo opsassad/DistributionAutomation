@@ -20,7 +20,7 @@ const CONFIG = {
   AUTH_TOKEN: 'YOUR_BEARER_TOKEN_HERE', // Replace with your actual token
 
   // Sheet Configuration
-  SHEET_NAME: 'Distribution Summary',  // Name of the tab containing distribution data
+  SHEET_NAME: 'Special Distro Status',  // Name of the tab containing distribution data
 
   // Column Configuration (1-indexed)
   COLUMNS: {
